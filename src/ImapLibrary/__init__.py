@@ -116,6 +116,7 @@ class ImapLibrary(object):
         self._imap.uid('store', email_index, '+FLAGS', r'(\DELETED)')
         self._imap.expunge()
 
+        
     def get_email_body(self, email_index):
         """Returns the decoded email body on multipart email message,
         otherwise returns the body text.
@@ -127,13 +128,32 @@ class ImapLibrary(object):
         | Get Email Body | INDEX |
         """
         if self._is_walking_multipart(email_index):
+            print('multipart')
             body = self.get_multipart_payload(decode=True)
         else:
-            body = self._imap.uid('fetch',
-                                  email_index,
-                                  '(BODY[TEXT])')[1][0][1].\
-                decode('utf-8') 
+            **raw_body = quopri.decodestring(self._imap.uid('fetch',
+                                  email_index,'(BODY[TEXT])')[1][0][1]).decode('utf-8')
+            body = message_from_string(raw_body)**
         return body
+    
+   # def get_email_body(self, email_index):
+   #     """Returns the decoded email body on multipart email message,
+   #     otherwise returns the body text.
+
+#        Arguments:
+#        - ``email_index``: An email index to identity the email message.
+#
+#        Examples:
+#        | Get Email Body | INDEX |
+#        """
+#        if self._is_walking_multipart(email_index):
+#            body = self.get_multipart_payload(decode=True)
+#        else:
+#            body = self._imap.uid('fetch',
+#                                  email_index,
+#                                  '(BODY[TEXT])')[1][0][1].\
+#                decode('utf-8') 
+#        return body
 
     def get_links_from_email(self, email_index):
         """Returns all links found in the email body from given ``email_index``.

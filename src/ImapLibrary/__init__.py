@@ -29,6 +29,7 @@ except ImportError:
     from urllib2 import urlopen
 from builtins import str as ustr
 from ImapLibrary.version import get_version
+import quopri
 
 __version__ = get_version()
 
